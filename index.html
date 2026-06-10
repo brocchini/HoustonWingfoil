@@ -102,24 +102,50 @@
       </svg>
     </div>
 
-    <h1>PWA Starter</h1>
-    <p class="sub">A self-contained, installable web app. Replace this shell with your own.</p>
-
-    <div class="panel">
-      <div class="row">
-        <span class="k">Connection</span>
-        <span class="badge" id="net"><span class="dot" id="netDot"></span><span id="netText">checking…</span></span>
-      </div>
-      <div class="row">
-        <span class="k">Service worker</span>
-        <span class="badge" id="sw"><span class="dot" id="swDot"></span><span id="swText">checking…</span></span>
-      </div>
-      <div class="row">
-        <span class="k">Display mode</span>
-        <span class="badge" id="mode"><span class="dot" id="modeDot"></span><span id="modeText">browser tab</span></span>
+   <div class="wrap">
+  <header>
+    <div class="title">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4fd1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+        <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+        <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+      </svg>
+      <div>
+        <h1 id="spotName">Texas City Dike</h1>
+        <div class="sub" id="spotSub">Wing Foil Conditions · Galveston Bay</div>
       </div>
     </div>
+    <button class="refresh" onclick="refreshCurrent()" id="refreshBtn">↻ Refresh</button>
+  </header>
+  <div class="meta" id="meta">NOAA HRRR model (3 km) via Open-Meteo · 10 m winds in knots</div>
 
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tab0" onclick="switchTab(0)">🪁 TX City Dike</button>
+    <button class="tab"        id="tab1" onclick="switchTab(1)">🏖 Quintana Beach</button>
+    <button class="tab"        id="tab2" onclick="switchTab(2)">🌿 EJ</button>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <span class="pill r">🚫 &lt; 12 kn · Bad</span>
+    <span class="pill g">💨 12–14 kn · Good</span>
+    <span class="pill g">⚡ 14–25 kn · Excellent</span>
+    <span class="pill g">🔥 25–30 kn · Expert</span>
+    <span class="pill g">⚠️ &gt; 30 kn · Nuking</span>
+    <span class="pill r">⛈️ Storms · Bad</span>
+  </div>
+
+  <div id="content">
+    <div class="state"><span class="spin">💨</span><div style="margin-top:12px">Pulling HRRR forecast…</div></div>
+  </div>
+
+  <footer>
+    Daylight window padded 30 min after sunrise / before sunset for safe light.
+    Storms or heavy rain override wind ratings. Winds above 30 kn flagged as Nuking — expert caution.
+    Forecast is guidance only — always assess conditions on-site before launching.
+  </footer>
+</div>
     <button id="install" disabled>Install app</button>
     <p class="hint" id="hint">
       On <strong>iOS</strong>, tap Share → <em>Add to Home Screen</em> (no button — Safari has no install prompt).
