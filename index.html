@@ -4,22 +4,81 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>PWA Starter</title>
-
+ 
   <!-- Manifest + theme -->
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#111827" />
-
+ 
   <!-- iOS / Safari home-screen support -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Starter" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
+ 
   <style>
   :root {
     --bg1:#0b1220; --bg2:#0e1a2e;
     --text:#e6edf6; --muted:#8ba3bf; --faint:#5f7891;
     --green:#34d399; --red:#ff4d4f; --redText:#ff7875; --cyan:#4fd1ff;
   }
+      :root {
+      --bg: #0b1120;
+      --panel: #111827;
+      --line: #1f2937;
+      --ink: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --ok: #34d399;
+      --off: #f87171;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      /* Respect notches when running standalone */
+      padding: env(safe-area-inset-top) env(safe-area-inset-right)
+               env(safe-area-inset-bottom) env(safe-area-inset-left);
+      display: grid;
+      place-items: center;
+    }
+    main {
+      width: min(460px, 92vw);
+      padding: 28px;
+    }
+    .mark {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: var(--panel);
+      display: grid; place-items: center;
+      border: 1px solid var(--line);
+      margin-bottom: 20px;
+    }
+    .mark svg { width: 26px; height: 26px; }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+    p.sub { margin: 0 0 24px; color: var(--muted); }
+ 
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 4px 16px;
+    }
+    .row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .row:last-child { border-bottom: 0; }
+    .row .k { color: var(--muted); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.85rem; font-weight: 600;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+    .dot.on { background: var(--ok); }
+    .dot.off { background: var(--off); }
   * { box-sizing:border-box; margin:0; padding:0; }
   body {
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
