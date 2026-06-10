@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>PWA Starter</title>
+
+  <!-- Manifest + theme -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#111827" />
+
+  <!-- iOS / Safari home-screen support -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Starter" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+
+  <style>
+    :root {
+      --bg: #0b1120;
+      --panel: #111827;
+      --line: #1f2937;
+      --ink: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --ok: #34d399;
+      --off: #f87171;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      /* Respect notches when running standalone */
+      padding: env(safe-area-inset-top) env(safe-area-inset-right)
+               env(safe-area-inset-bottom) env(safe-area-inset-left);
+      display: grid;
+      place-items: center;
+    }
+    main {
+      width: min(460px, 92vw);
+      padding: 28px;
+    }
+    .mark {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: var(--panel);
+      display: grid; place-items: center;
+      border: 1px solid var(--line);
+      margin-bottom: 20px;
+    }
+    .mark svg { width: 26px; height: 26px; }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+    p.sub { margin: 0 0 24px; color: var(--muted); }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 4px 16px;
+    }
+    .row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .row:last-child { border-bottom: 0; }
+    .row .k { color: var(--muted); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.85rem; font-weight: 600;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+    .dot.on { background: var(--ok); }
+    .dot.off { background: var(--off); }
+
+    button {
+      margin-top: 20px; width: 100%;
+      background: var(--accent); color: #04293a;
+      border: 0; border-radius: 11px;
+      padding: 13px; font-size: 1rem; font-weight: 700;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.45; cursor: default; }
+    button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    .hint { margin-top: 14px; font-size: 0.85rem; color: var(--muted); }
+    code { background: #0b1120; padding: 1px 6px; border-radius: 5px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .dot.on { transition: background 0.2s; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 8h11a2.5 2.5 0 1 0-2.5-2.5" />
+        <path d="M3 12h14a2.5 2.5 0 1 1-2.5 2.5" />
+        <path d="M3 16h9a2.5 2.5 0 1 0-2.5 2.5" opacity="0.6" />
+      </svg>
+    </div>
+
+    <h1>PWA Starter</h1>
+    <p class="sub">A self-contained, installable web app. Replace this shell with your own.</p>
+
+    <div class="panel">
+      <div class="row">
+        <span class="k">Connection</span>
+        <span class="badge" id="net"><span class="dot" id="netDot"></span><span id="netText">checking…</span></span>
+      </div>
+      <div class="row">
+        <span class="k">Service worker</span>
+        <span class="badge" id="sw"><span class="dot" id="swDot"></span><span id="swText">checking…</span></span>
+      </div>
+      <div class="row">
+        <span class="k">Display mode</span>
+        <span class="badge" id="mode"><span class="dot" id="modeDot"></span><span id="modeText">browser tab</span></span>
+      </div>
+    </div>
+
+    <button id="install" disabled>Install app</button>
+    <p class="hint" id="hint">
+      On <strong>iOS</strong>, tap Share → <em>Add to Home Screen</em> (no button — Safari has no install prompt).
+    </p>
+  </main>
+
+  <script>
+    // --- Network status -------------------------------------------------
+    const netDot = document.getElementById("netDot");
+    const netText = document.getElementById("netText");
+    function paintNet() {
+      const on = navigator.onLine;
+      netDot.className = "dot " + (on ? "on" : "off");
+      netText.textContent = on ? "online" : "offline";
+    }
+    addEventListener("online", paintNet);
+    addEventListener("offline", paintNet);
+    paintNet();
+
+    // --- Display mode (are we running as an installed app?) -------------
+    const standalone =
+      matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+    if (standalone) {
+      document.getElementById("modeDot").className = "dot on";
+      document.getElementById("modeText").textContent = "standalone (installed)";
+    }
+
+    // --- Install prompt (Android / Chromium) ----------------------------
+    const installBtn = document.getElementById("install");
+    let deferredPrompt = null;
+    addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.disabled = false;
+      document.getElementById("hint").style.display = "none";
+    });
+    installBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBtn.disabled = true;
+    });
+    addEventListener("appinstalled", () => {
+      installBtn.textContent = "Installed";
+      installBtn.disabled = true;
+    });
+
+    // --- Register the service worker ------------------------------------
+    const swDot = document.getElementById("swDot");
+    const swText = document.getElementById("swText");
+    if ("serviceWorker" in navigator) {
+      addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+          .then(() => { swDot.className = "dot on"; swText.textContent = "active"; })
+          .catch(() => { swDot.className = "dot off"; swText.textContent = "failed"; });
+      });
+    } else {
+      swDot.className = "dot off";
+      swText.textContent = "unsupported";
+    }
+  </script>
+</body>
+</html>
