@@ -166,11 +166,11 @@
 // ============================== CONFIG =======================================
 const SPOTS = [
   { name: "Texas City Dike", sub: "Wing Foil Conditions · Galveston Bay",   lat: 29.3802,    lon: -94.8546,
-    station: "Eagle Point",     noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8771013" },
+    station: "Eagle Point",     stationId: "8771013", noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8771013" },
   { name: "Quintana Beach",  sub: "Wing Foil Conditions · Freeport Area",   lat: 28.934503,  lon: -95.295124,
-    station: "Freeport Harbor", noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8772471" },
+    station: "Freeport Harbor", stationId: "8772471", noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8772471" },
   { name: "El Jardim (EJ)",  sub: "Wing Foil Conditions · Galveston Bay N", lat: 29.597221,  lon: -94.985108,
-    station: "Morgans Point",   noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8770613" },
+    station: "Morgans Point",   stationId: "8770613", noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8770613" },
 ];
 const TZ = "America/Chicago";
 const cache = [null, null, null];
@@ -182,6 +182,12 @@ function buildURL(spot) {
     + "&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,precipitation,precipitation_probability"
     + "&daily=sunrise,sunset"
     + "&wind_speed_unit=kn&timezone=" + encodeURIComponent(TZ) + "&forecast_days=2";
+}
+
+function buildLiveURL(spot) {
+  return "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
+    + "?date=latest&station=" + spot.stationId
+    + "&product=wind&units=english&time_zone=lst_ldt&format=json";
 }
 
 // ============================== LOGIC ========================================
@@ -316,19 +322,50 @@ function switchTab(idx) {
     document.getElementById("tab" + t).className = "tab" + (t === idx ? " active" : "");
   document.getElementById("spotName").textContent = SPOTS[idx].name;
   document.getElementById("spotSub").textContent  = SPOTS[idx].sub;
-  const nb = document.getElementById("noaaBtn");
-  nb.href = SPOTS[idx].noaa;
-  nb.textContent = "📡 Live Obs — " + SPOTS[idx].station + " Station (NOAA)";
+  document.getElementById("noaaBtn").href = SPOTS[idx].noaa;
+  renderLiveBtn(idx);
   loadSpot(idx, false);
 }
 
 function refreshCurrent() {
   cache[activeTab] = null;
   loadSpot(activeTab, true);
+  fetchLive(activeTab);
+}
+
+// ============================== LIVE OBS =====================================
+const liveCache = [null, null, null];
+
+function renderLiveBtn(idx) {
+  const nb = document.getElementById("noaaBtn");
+  const label = SPOTS[idx].station + " Station (NOAA)";
+  const live = liveCache[idx];
+  nb.textContent = live
+    ? "📡 " + live.speed + " kn · gust " + live.gust + " kn · " + live.dir + " — " + label
+    : "📡 Live Obs — " + label;
+}
+
+async function fetchLive(idx) {
+  try {
+    const res = await fetch(buildLiveURL(SPOTS[idx]));
+    if (!res.ok) throw new Error("API error " + res.status);
+    const json = await res.json();
+    const d = json.data && json.data[0];
+    if (!d) throw new Error("No live data");
+    liveCache[idx] = { speed: Math.round(parseFloat(d.s)), gust: Math.round(parseFloat(d.g)), dir: d.dr };
+  } catch(e) {
+    liveCache[idx] = null;
+  }
+  if (activeTab === idx) renderLiveBtn(idx);
 }
 
 // Boot: load all spots in parallel, show tab 0
-for (let s = 0; s < SPOTS.length; s++) loadSpot(s, true);
+for (let s = 0; s < SPOTS.length; s++) { loadSpot(s, true); fetchLive(s); }
+
+// Refresh live observations every 10 minutes
+setInterval(() => {
+  for (let s = 0; s < SPOTS.length; s++) fetchLive(s);
+}, 10 * 60 * 1000);
 
 // Re-fetch automatically when app is reopened from background (stale data guard)
 document.addEventListener("visibilitychange", () => {
@@ -336,6 +373,7 @@ document.addEventListener("visibilitychange", () => {
     for (let s = 0; s < SPOTS.length; s++) { cache[s] = null; }
     loadSpot(activeTab, true);
     for (let s = 0; s < SPOTS.length; s++) if (s !== activeTab) loadSpot(s, true);
+    for (let s = 0; s < SPOTS.length; s++) fetchLive(s);
   }
 });
 
