@@ -38,7 +38,7 @@ self.addEventListener("fetch", (event) => {
 
   // Forecast/live data APIs: network-first, fall back to last cached response
   // (marked with X-From-Cache so the page can show an "offline/stale" notice).
-  if (url.origin === "https://api.open-meteo.com" || url.origin === "https://api.tidesandcurrents.noaa.gov") {
+  if (url.origin === "https://api.open-meteo.com" || url.origin === "https://marine-api.open-meteo.com" || url.origin === "https://api.tidesandcurrents.noaa.gov") {
     event.respondWith(
       caches.open(DATA_CACHE).then((cache) =>
         fetch(req)
