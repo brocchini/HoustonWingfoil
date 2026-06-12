@@ -207,6 +207,15 @@ function classify(speed, code, precip) {
 const DIRS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
 const dirName = d => DIRS[Math.round(d / 22.5) % 16];
 
+// Arrow points in the direction the wind is blowing toward (downwind),
+// given a meteorological "from" direction in degrees.
+function windArrow(deg) {
+  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"'
+    + ' stroke-linecap="round" stroke-linejoin="round"'
+    + ' style="vertical-align:middle;transform:rotate(' + ((deg + 180) % 360) + 'deg)">'
+    + '<line x1="12" y1="20" x2="12" y2="4"/><polyline points="6 10 12 4 18 10"/></svg>';
+}
+
 function fmtHour(iso) {
   const h = parseInt(iso.slice(11,13), 10);
   return (h % 12 === 0 ? 12 : h % 12) + " " + (h >= 12 ? "PM" : "AM");
@@ -246,7 +255,7 @@ function render(json) {
         + '<div class="mid">'
         +   '<span class="spd">' + Math.round(H.wind_speed_10m[i]) + ' <small>kn</small></span>'
         +   '<span class="det pur">&gt;' + Math.round(H.wind_gusts_10m[i]) + ' <small style="font-size:11.5px">kn</small></span>'
-        +   '<span class="det dir">' + dirName(H.wind_direction_10m[i]) + '</span>'
+        +   '<span class="det dir">' + windArrow(H.wind_direction_10m[i]) + ' ' + dirName(H.wind_direction_10m[i]) + '</span>'
         +   (pp != null && pp >= 30 ? '<span class="det">💧 ' + pp + '%</span>' : '')
         + '</div>'
         + '<div class="cond"><span>' + c.ico + '</span><span>' + esc(c.label) + '</span></div>'
@@ -340,9 +349,9 @@ function renderLiveBtn(idx) {
   const nb = document.getElementById("noaaBtn");
   const label = SPOTS[idx].station + " Station (NOAA)";
   const live = liveCache[idx];
-  nb.textContent = live
-    ? "📡 " + live.speed + " kn · gust " + live.gust + " kn · " + live.dir + " — " + label
-    : "📡 Live Obs — " + label;
+  nb.innerHTML = live
+    ? "📡 " + live.speed + " kn · gust " + live.gust + " kn · " + windArrow(live.deg) + " " + live.dir + " — " + esc(label)
+    : "📡 Live Obs — " + esc(label);
 }
 
 async function fetchLive(idx) {
@@ -352,7 +361,7 @@ async function fetchLive(idx) {
     const json = await res.json();
     const d = json.data && json.data[0];
     if (!d) throw new Error("No live data");
-    liveCache[idx] = { speed: Math.round(parseFloat(d.s)), gust: Math.round(parseFloat(d.g)), dir: d.dr };
+    liveCache[idx] = { speed: Math.round(parseFloat(d.s)), gust: Math.round(parseFloat(d.g)), dir: d.dr, deg: parseFloat(d.d) };
   } catch(e) {
     liveCache[idx] = null;
   }
