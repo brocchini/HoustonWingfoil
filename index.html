@@ -197,7 +197,7 @@ const HEAVY_PRECIP_MM = 4;
 function classify(speed, code, precip) {
   if (STORM_CODES.indexOf(code) !== -1 || (precip || 0) >= HEAVY_PRECIP_MM)
     return { label: "Bad — Storm", good: false, ico: "⛈️" };
-  if (speed < 12)  return { label: "Bad — Too Light",          good: false, ico: "🚫" };
+  if (speed < 12)  return { label: "Too Light",                good: false, ico: "🚫" };
   if (speed < 14)  return { label: "Good",                     good: true,  ico: "💨" };
   if (speed < 25)  return { label: "Excellent",                good: true,  ico: "⚡" };
   if (speed <= 30) return { label: "Expert",                   good: true,  ico: "🔥" };
