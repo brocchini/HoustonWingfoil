@@ -307,7 +307,7 @@ async function loadSpot(idx, force) {
     const json = await res.json();
     if (!json.hourly || !json.hourly.wind_speed_10m) throw new Error("Unexpected API response");
     cache[idx] = json;
-    document.getElementById("offlineNote").style.display = "none";
+    document.getElementById("offlineNote").style.display = res.headers.get("X-From-Cache") ? "block" : "none";
     if (activeTab === idx) render(json);
   } catch(e) {
     // Offline fallback: service worker may have served a stale cached API response;
