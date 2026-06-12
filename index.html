@@ -74,7 +74,7 @@
   .summary.ok { color:var(--green); } .summary.no { color:var(--redText); }
   .rows { display:flex; flex-direction:column; gap:6px; }
   .row {
-    display:grid; grid-template-columns:54px 1fr auto; align-items:center; gap:10px;
+    display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:10px;
     border-radius:12px; padding:10px 12px;
   }
   .row.g { background:rgba(52,211,153,.07); border:1px solid rgba(52,211,153,.28); border-left:4px solid var(--green); }
@@ -254,7 +254,7 @@ function render(json) {
         + '<div class="hr">' + fmtHour(H.time[i]) + '</div>'
         + '<div class="mid">'
         +   '<span class="spd">' + Math.round(H.wind_speed_10m[i]) + ' <small>kn</small></span>'
-        +   '<span class="det pur">&gt;' + Math.round(H.wind_gusts_10m[i]) + ' <small style="font-size:11.5px">kn</small></span>'
+        +   '<span class="det pur">&gt; ' + Math.round(H.wind_gusts_10m[i]) + ' <small style="font-size:11.5px">kn</small></span>'
         +   '<span class="det dir">' + windArrow(H.wind_direction_10m[i]) + ' ' + dirName(H.wind_direction_10m[i]) + '</span>'
         +   (pp != null && pp >= 30 ? '<span class="det">💧 ' + pp + '%</span>' : '')
         + '</div>'
