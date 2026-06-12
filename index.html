@@ -43,6 +43,11 @@
     font-size:13px; display:flex; align-items:center; gap:6px; white-space:nowrap;
   }
   button.refresh:active { background:rgba(79,209,255,.25); }
+  .updateBtn {
+    background:transparent; border:1px solid rgba(139,163,191,.3);
+    color:var(--muted); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:11px;
+  }
+  .updateBtn:active { background:rgba(139,163,191,.15); }
 
   .tabs { display:flex; gap:0; margin-bottom:18px; border-radius:12px; overflow:hidden; border:1px solid rgba(79,209,255,.2); }
   .tab {
@@ -160,6 +165,7 @@
     Daylight window padded 30 min after sunrise / before sunset for safe light.
     Storms or heavy rain override wind ratings. Winds above 30 kn flagged as Nuking — expert caution.
     Forecast is guidance only — always assess conditions on-site before launching.
+    <div style="margin-top:10px"><button class="updateBtn" onclick="checkForUpdate()" id="updateBtn">⬇ Check for App Update</button></div>
   </footer>
 </div>
 
@@ -341,6 +347,23 @@ function refreshCurrent() {
   cache[activeTab] = null;
   loadSpot(activeTab, true);
   fetchLive(activeTab);
+}
+
+async function checkForUpdate() {
+  const btn = document.getElementById("updateBtn");
+  btn.disabled = true; btn.textContent = "Checking…";
+  try {
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+    if ("serviceWorker" in navigator) {
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (reg) await reg.update();
+    }
+  } finally {
+    location.reload();
+  }
 }
 
 // ============================== LIVE OBS =====================================
