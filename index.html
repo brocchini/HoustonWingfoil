@@ -167,7 +167,7 @@
 const SPOTS = [
   { name: "Texas City Dike", sub: "Wing Foil Conditions · Galveston Bay",   lat: 29.3802,    lon: -94.8546,
     station: "Eagle Point",     stationId: "8771013", noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8771013" },
-  { name: "Quintana Beach",  sub: "Wing Foil Conditions · Freeport Area",   lat: 28.934503,  lon: -95.295124,
+  { name: "Quintana (Q SS)",  sub: "Wing Foil Conditions · Freeport Area",   lat: 28.934503,  lon: -95.295124,
     station: "Freeport Harbor", stationId: "8772471", noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8772471" },
   { name: "El Jardim (EJ)",  sub: "Wing Foil Conditions · Galveston Bay N", lat: 29.597221,  lon: -94.985108,
     station: "Morgans Point",   stationId: "8770613", noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8770613" },
@@ -347,7 +347,7 @@ const liveCache = [null, null, null];
 
 function renderLiveBtn(idx) {
   const nb = document.getElementById("noaaBtn");
-  const label = SPOTS[idx].station + " Station (NOAA)";
+  const label = SPOTS[idx].station + " (NOOA)";
   const live = liveCache[idx];
   nb.innerHTML = live
     ? "📡 " + live.speed + " kn · gust " + live.gust + " kn · " + windArrow(live.deg) + " " + live.dir + " — " + esc(label)
