@@ -14,7 +14,11 @@ Everything lives in `index.html` — there is no build step, package manager, or
 - **LOGIC**: `classify(speed, code, precip)` maps a forecast hour to a rating (Bad/Good/Excellent/Expert/Nuking) based on wind speed thresholds (12/14/25/30 kn), storm weather codes, and heavy precipitation. `dirName()` converts degrees to compass direction.
 - **RENDER**: `render(json)` builds the Today/Tomorrow sections, filtering hourly data to the daylight window (30 min after sunrise to 30 min before sunset) and counting "rideable" hours.
 - **LOAD**: `loadSpot(idx, force)` fetches and caches per-tab forecast data (`cache` array, one entry per spot), with offline/error fallback to last cached response. All three spots load in parallel on boot; switching tabs renders from cache if available. `visibilitychange` triggers a full refresh when the app is reopened.
-- **PWA**: registers `./sw.js` as a service worker if supported (note: `sw.js` was removed from the repo — registration will fail silently via the `.catch`).
+- **PWA**: registers `./sw.js` as a service worker. `sw.js` caches the app shell (cache-first) and Open-Meteo/Marine/NOAA API responses (network-first, falling back to cached data marked `X-From-Cache`); a "Check for App Update" button in the footer unregisters the SW, clears caches, and reloads to fetch the latest version.
+
+## Versioning
+
+`APP_VERSION` (shown in the footer as "v...") is auto-stamped with the current timestamp (`YYYY.MM.DD.HHMM`) by the `.githooks/pre-commit` hook whenever `index.html` is part of a commit. This repo uses `core.hooksPath = .githooks` (set via `git config core.hooksPath .githooks`) — re-run that command after a fresh clone for the hook to take effect.
 
 ## Notes
 

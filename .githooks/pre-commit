@@ -1,0 +1,10 @@
+#!/bin/sh
+# Stamp APP_VERSION in index.html with the current timestamp whenever
+# index.html is part of the commit, so the footer always shows the
+# build time of the latest commit.
+if git diff --cached --name-only | grep -q '^index\.html$'; then
+  ts=$(date "+%Y.%m.%d.%H%M")
+  sed -i.bak -E "s/const APP_VERSION = \"[^\"]*\";/const APP_VERSION = \"$ts\";/" index.html
+  rm -f index.html.bak
+  git add index.html
+fi

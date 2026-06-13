@@ -166,12 +166,15 @@
     Daylight window padded 30 min after sunrise / before sunset for safe light.
     Storms or heavy rain override wind ratings. Winds above 30 kn flagged as Nuking — expert caution.
     Forecast is guidance only — always assess conditions on-site before launching.
-    <div style="margin-top:10px"><button class="updateBtn" onclick="checkForUpdate()" id="updateBtn">⬇ Check for App Update</button></div>
+    <div style="margin-top:10px"><button class="updateBtn" onclick="checkForUpdate()" id="updateBtn">⬇ Check for App Update</button> <span style="opacity:.6" id="appVersion"></span></div>
   </footer>
 </div>
 
 <script>
 // ============================== CONFIG =======================================
+const APP_VERSION = "2026.06.13.0848";
+document.getElementById("appVersion").textContent = "v" + APP_VERSION;
+
 const SPOTS = [
   { name: "Texas City Dike", sub: "Wing Foil Conditions · Galveston Bay",   lat: 29.3802,    lon: -94.8546,
     station: "Eagle Point",     stationId: "8771013", noaa: "https://tidesandcurrents.noaa.gov/met.html?id=8771013" },
