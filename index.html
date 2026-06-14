@@ -172,7 +172,7 @@
 
 <script>
 // ============================== CONFIG =======================================
-const APP_VERSION = "2026.06.13.0848";
+const APP_VERSION = "2026.06.14.1123";
 document.getElementById("appVersion").textContent = "v" + APP_VERSION;
 
 const SPOTS = [
@@ -383,8 +383,24 @@ function refreshCurrent() {
 
 async function checkForUpdate() {
   const btn = document.getElementById("updateBtn");
+  const versionEl = document.getElementById("appVersion");
   btn.disabled = true; btn.textContent = "Checking…";
   try {
+    // Cache-busting query string so the service worker's cache-first shell
+    // handler can't return the stale cached index.html.
+    const res = await fetch("./index.html?check=" + Date.now(), { cache: "no-store" });
+    const text = await res.text();
+    const m = text.match(/const APP_VERSION = "([^"]+)"/);
+    const latest = m && m[1];
+
+    if (!latest || latest === APP_VERSION) {
+      versionEl.textContent = "v" + APP_VERSION + " (up to date)";
+      return;
+    }
+
+    // Clear the service worker and caches in the background so the next
+    // launch fetches the new version fresh — avoid location.reload(), which
+    // can leave iOS standalone PWAs on a blank screen.
     if ("serviceWorker" in navigator) {
       const regs = await navigator.serviceWorker.getRegistrations();
       await Promise.all(regs.map(r => r.unregister()));
@@ -393,8 +409,11 @@ async function checkForUpdate() {
       const keys = await caches.keys();
       await Promise.all(keys.map(k => caches.delete(k)));
     }
+    versionEl.textContent = "v" + APP_VERSION + " → v" + latest + " ready — close & reopen the app";
+  } catch (e) {
+    versionEl.textContent = "v" + APP_VERSION + " — couldn't check for updates";
   } finally {
-    location.reload();
+    btn.disabled = false; btn.textContent = "⬇ Check for App Update";
   }
 }
 
