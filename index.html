@@ -172,7 +172,7 @@
 
 <script>
 // ============================== CONFIG =======================================
-const APP_VERSION = "2026.06.14.1137";
+const APP_VERSION = "2026.06.14.1144";
 document.getElementById("appVersion").textContent = "v" + APP_VERSION;
 
 const SPOTS = [
@@ -409,7 +409,7 @@ async function checkForUpdate() {
       const keys = await caches.keys();
       await Promise.all(keys.map(k => caches.delete(k)));
     }
-    versionEl.textContent = "v" + APP_VERSION + " → v" + latest + " ready — close & reopen the app";
+    versionEl.textContent = "v" + APP_VERSION + " → v" + latest + " ready — fully quit (swipe up to close) and reopen the app";
   } catch (e) {
     versionEl.textContent = "v" + APP_VERSION + " — couldn't check for updates";
   } finally {
