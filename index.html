@@ -231,6 +231,7 @@ const STORM_CODES = [65, 82, 95, 96, 99];
 const HEAVY_PRECIP_MM = 4;
 
 function classify(speed, code, precip) {
+  console.debug("Code:", code, " precip:", precip);
   if (STORM_CODES.indexOf(code) !== -1 || (precip || 0) >= HEAVY_PRECIP_MM)
     return { label: "Bad — Storm", good: false, ico: "⛈️" };
   if (speed < 12)  return { label: "Too Light",                good: false, ico: "🚫" };
